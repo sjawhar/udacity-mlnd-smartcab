@@ -20,5 +20,7 @@ When actions are chosen purely by random and the agent is given unlimited time t
 
 # Using Docker Container
 ```bash
-docker run -dt -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $WORKDIR:/home/pygame/work --name pygame pygame /bin/bash -c "cd work; python smartcab/agent.py"
+docker run -dt -e DISPLAY=$DISPLAY \
+    -v /tmp/.X11-unix:/tmp/.X11-unix -v $WORKDIR:/home/pygame/work \
+    --name pygame pygame /bin/bash -c "cd work; python smartcab/agent.py"
 ```
