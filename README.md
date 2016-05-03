@@ -3,18 +3,10 @@ When actions are chosen purely by random and the agent is given unlimited time t
 
 # Indentifying and Updating State
 **Relevant state variables:**
-* Left/right bearing from current location to target: `[-1,0,1]`
-    - If the target is to the right of the current location, taking into account the current heading, the value is 1.
-    - If the target is to the left, the value is -1.
-    - If the target is straight ahead, the value is 0.
-* Backwards/forwards bearing from current location to target: `[-1,0,1]`
-    - If the target is ahead of the current location, taking into account the current heading, the value is 1.
-    - If the target is behind, the value is -1.
-    - If the target is directly left or right, the value is 0.
-* Traffic light color: `['red','green']`
-* Oncoming traffic: `[None, 'forward', 'left', 'right']`
-* Right traffic: `[None, 'forward', 'left', 'right']`
-* Left traffic: `[None, 'forward', 'left', 'right']`
+* Direction of next waypoint: `[None, 'forward', 'left', 'right']`
+* Does the agent have the right of way to proceed forward? `[True, False]`
+* Does the agent have the right of way to turn right? `[True, False]`
+* Does the agent have the right of way to turn left? `[True, False]`
 
 **Valid actions:** `[None, 'forward', 'left', 'right']`
 

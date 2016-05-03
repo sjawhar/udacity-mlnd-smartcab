@@ -15,7 +15,7 @@ class LearningAgent(Agent):
         self.planner = RoutePlanner(self.env, self)  # simple route planner to get next_waypoint
         # TODO: Initialize any additional variables here
         self.randomness = 0.1
-        self.discount = 1
+        self.discount = 0.5
         self.net_reward = 0
 
         def get_default_q_values():
@@ -46,13 +46,42 @@ class LearningAgent(Agent):
         reward = self.env.act(self, action)
 
         # TODO: Learn policy based on state, action, reward
+        # TODO: Add negative reward if failed to reach destination
         self.update_q_values(t, action, reward)
         self.net_reward += reward
 
-        print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
+        # print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
+        if self.planner.next_waypoint() == None:
+            print "Reached destination with net reward of {}".format(self.net_reward)
 
     def build_state_tuple(self, waypoint, inputs):
-        return (waypoint, inputs['light'], inputs['oncoming'], inputs['right'], inputs['left'])
+        forward_clear = self.is_forward_clear(inputs)
+        right_clear = self.is_right_clear(inputs)
+        left_clear = self.is_left_clear(inputs)
+        return (waypoint, forward_clear, right_clear, left_clear)
+
+    def is_forward_clear(self, inputs):
+        if inputs['light'] == 'red':
+            return False
+        return True
+
+    def is_right_clear(self, inputs):
+        if inputs['light'] == 'green':
+            return True
+        if inputs['left'] == 'forward':
+            return False
+        if inputs['oncoming'] == 'left':
+            return False
+        return True
+
+    def is_left_clear(self, inputs):
+        if inputs['light'] == 'red':
+            return False
+        if inputs['oncoming'] == 'forward':
+            return False
+        if inputs['oncoming'] == 'right':
+            return False
+        return True
 
     def get_next_action(self):
         best_action = self.get_best_action(self.state)[0]
@@ -88,8 +117,8 @@ def run():
     e.set_primary_agent(a, enforce_deadline=True)  # set agent to track
 
     # Now simulate it
-    sim = Simulator(e, update_delay=0.1)  # reduce update_delay to speed up simulation
-    sim.run(n_trials=10)  # press Esc or close pygame window to quit
+    sim = Simulator(e, update_delay=0.01)  # reduce update_delay to speed up simulation
+    sim.run(n_trials=100)  # press Esc or close pygame window to quit
 
 
 if __name__ == '__main__':
