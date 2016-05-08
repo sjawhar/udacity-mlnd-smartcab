@@ -58,33 +58,7 @@ class LearningAgent(Agent):
             print "Reached destination in {} timesteps. Net reward: {}, Penalties: {}".format(t+1, self.net_reward, self.penalties)
 
     def build_state_tuple(self, waypoint, inputs):
-        forward_clear = self.is_forward_clear(inputs)
-        right_clear = self.is_right_clear(inputs)
-        left_clear = self.is_left_clear(inputs)
-        return (waypoint, forward_clear, right_clear, left_clear)
-
-    def is_forward_clear(self, inputs):
-        if inputs['light'] == 'red':
-            return False
-        return True
-
-    def is_right_clear(self, inputs):
-        if inputs['light'] == 'green':
-            return True
-        if inputs['left'] == 'forward':
-            return False
-        if inputs['oncoming'] == 'left':
-            return False
-        return True
-
-    def is_left_clear(self, inputs):
-        if inputs['light'] == 'red':
-            return False
-        if inputs['oncoming'] == 'forward':
-            return False
-        if inputs['oncoming'] == 'right':
-            return False
-        return True
+        return (waypoint, inputs['light'], inputs['oncoming'], inputs['left'])
 
     def get_next_action(self):
         best_action = self.get_best_action(self.state)[0]
