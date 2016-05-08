@@ -38,48 +38,56 @@ The performance of each parameter combination was measured in the last 25 trials
 * Average penalties received (of successful trials)
 
 The results are shown below:
-![Optimization results](images/optimization-results.jpg)
+```
+            |-------------------------------|-------------------------------|-------------------------------|
+            |         20% Randomness        |         10% Randomness        |         5% Randomness         |
+            |---------|------|------|-------|---------|------|------|-------|---------|------|------|-------|
+            | Success | Time | Rwrd | Pnlts | Success | Time | Rwrd | Pnlts | Success | Time | Rwrd | Pnlts |
+|-----------|---------|------|------|-------|---------|------|------|-------|---------|------|------|-------|
+| 1/t^(0.6) | 81.3%   | 16.1 | 30.4 | 1.2   | 89.3%   | 13.6 | 28.8 | 0.5   | 86.7%   | 14.3 | 30.4 | 0.3   |
+| 1/t^(0.8) | 80.0%   | 16.1 | 30.0 | 1.4   | 96.0%   | 15.0 | 31.0 | 0.5   | 84.0%   | 14.8 | 31.1 | 0.5   |
+| 1/t       | 78.7%   | 15.1 | 29.3 | 1.1   | 86.7%   | 14.1 | 30.0 | 0.6   | 50.7%   | 16.0 | 32.8 | 0.3   |
+|-----------|---------|------|------|-------|---------|------|------|-------|---------|------|------|-------|
+```
 
 Based on these result, I believe a randomness of 10% and learning rate of 1/t^0.8 to be the best choice. The cab reaches the destination 96% of the time. It takes slightly longer, on average, than the other learning rates at 10% randomness, but I think consistent on-time delivery is more important. In addition, the cab receives less than one penalty per trip on average, many of which are probably due to the cab taking its random action.
 
 Q-values produced after 100 trials using these parameter values are listed below. The states are listed as tuples of waypoint, light status, oncoming traffic status, left traffic status.
 
 ```python
-{
-    ('forward', 'green', None, None): {'forward': 5.435114865285471, 'left': 2.4032638308606082, 'right': 1.916037234329821, None: 2.857916898117176},
-    ('forward', 'green', None, 'forward'): {'forward': 2.321740711327675, 'left': 1, 'right': 1, None: 1},
-    ('forward', 'green', None, 'right'): {'forward': 5.130630722022692, 'left': 1, 'right': 1, None: 1},
-    ('forward', 'green', None, 'left'): {'forward': 1.2495132711148689, 'left': 1, 'right': 1, None: 1},
-    ('forward', 'green', 'forward', None): {'forward': 2.9999999999999987, 'left': 1, 'right': 1, None: 1},
-    ('forward', 'green', 'right', None): {'forward': 1, 'left': 1, 'right': 1.6352760038775067, None: 1},
-    ('forward', 'green', 'left', None): {'forward': 2.0788442078521787, 'left': 1, 'right': 1.0573543475987444, None: 1},
-    ('forward', 'red', None, None): {'forward': 0.05705630836340217, 'left': 0.01619020129152201, 'right': 1.955125077056673, None: 2.0},
-    ('forward', 'red', None, 'forward'): {'forward': 0.009657456886476262, 'left': 1, 'right': 1, None: 1.1649384888466119},
-    ('forward', 'red', None, 'right'): {'forward': 0.8444993810736191, 'left': 1, 'right': 1, None: 1},
-    ('forward', 'red', None, 'left'): {'forward': 0.6837628939440246, 'left': 0.8444993810736191, 'right': 1, None: 1},
-    ('forward', 'red', 'forward', None): {'forward': 0.6837628939440246, 'left': 0.7158031437793004, 'right': 1, None: 1},
-    ('forward', 'red', 'right', None): {'forward': 0.5860811015616356, 'left': 0.6422577297236862, 'right': 1, None: 1},
-    ('forward', 'red', 'left', None): {'forward': 0.3771345301922415, 'left': 0.13847623375222368, 'right': 1.9438624257270534, None: 1},
+(forward, green, forward, none):    forward:  3.00, left:  1,    right: 1,    none: 1
+(forward, green, left,    none):    forward:  2.08, left:  1,    right: 1.06, none: 1
+(forward, green, right,   none):    forward:  1,    left:  1,    right: 1.64, none: 1
+(forward, green, none,    forward): forward:  2.32, left:  1,    right: 1,    none: 1
+(forward, green, none,    left):    forward:  1.25, left:  1,    right: 1,    none: 1
+(forward, green, none,    right):   forward:  5.13, left:  1,    right: 1,    none: 1
+(forward, green, none,    none):    forward:  5.44, left:  2.40, right: 1.92, none: 2.86
+(forward, red,   forward, none):    forward:  0.68, left:  0.72, right: 1,    none: 1
+(forward, red,   left,    none):    forward:  0.38, left:  0.14, right: 1.94, none: 1
+(forward, red,   right,   none):    forward:  0.59, left:  0.64, right: 1,    none: 1
+(forward, red,   none,    forward): forward:  0.01, left:  1,    right: 1,    none: 1.16
+(forward, red,   none,    left):    forward:  0.68, left:  0.84, right: 1,    none: 1
+(forward, red,   none,    right):   forward:  0.84, left:  1,    right: 1,    none: 1
+(forward, red,   none,    none):    forward:  0.06, left:  0.02, right: 1.96, none: 2.00
 
-    ('right', 'green', None, None): {'forward': 2.5851705943470042, 'left': 1.9599149692249167, 'right': 3.4737030904287414, None: 2.68972695645543},
-    ('right', 'green', None, 'right'): {'forward': 1.1137814807435202, 'left': 1, 'right': 1, None: 1},
-    ('right', 'green', None, 'left'): {'forward': 1.1428728400803796, 'left': 1, 'right': 1, None: 1},
-    ('right', 'green', 'left', None): {'forward': 1, 'left': 1.2210792065333615, 'right': 1, None: 1}
-    ('right', 'green', 'left', 'forward'): {'forward': 1.1610184557611893, 'left': 1, 'right': 1, None: 1},
-    ('right', 'red', None, None): {'forward': 0.6837628939440246, 'left': 0.8824027848175164, 'right': 3.3140576275627476, None: 2.9698874597915155},
-    ('right', 'red', None, 'right'): {'forward': 1, 'left': 1, 'right': 1, None: 1},
-    ('right', 'red', None, 'left'): {'forward': 1, 'left': 1, 'right': 1, None: 1},
-    ('right', 'red', 'forward', None): {'forward': -0.5, 'left': -0.12664696577922102, 'right': 2.972461229158127, None: 1},
-    ('right', 'red', 'right', None): {'forward': 0.6837628939440246, 'left': 0.5051845334601647, 'right': 1, None: 1},
-    ('right', 'red', 'left', None): {'forward': 0.3771345301922415, 'left': 0.24381606637080264, 'right': 2.380090808472715, None: 1},
-    ('right', 'red', 'left', 'forward'): {'forward': 0.5860811015616356, 'left': 1, 'right': 1, None: 1},
+(left,    green, left,    none):    forward:  1.20, left:  1,    right: 1,    none: 1
+(left,    green, none,    none):    forward:  1.14, left:  5.63, right: 1.52, none: 1
+(left,    red,   forward, none):    forward:  1,    left:  1,    right: 1.15, none: 1
+(left,    red,   left,    none):    forward: -0.5,  left:  0.14, right: 1.95, none: 1
+(left,    red,   none,    none):    forward: -0.43, left:  0.23, right: 1.83, none: 1.33
 
-    ('left', 'green', None, None): {'forward': 1.1421506396866425, 'left': 5.625387851718434, 'right': 1.5205576975343003, None: 1},
-    ('left', 'green', 'left', None): {'forward': 1.2008952021774568, 'left': 1, 'right': 1, None: 1},
-    ('left', 'red', None, None): {'forward': -0.42991731184970444, 'left': 0.22511475002484338, 'right': 1.8331033925667108, None: 1.3261446506504435},
-    ('left', 'red', 'forward', None): {'forward': 1, 'left': 1, 'right': 1.1489971881394845, None: 1},
-    ('left', 'red', 'left', None): {'forward': -0.5, 'left': 0.13847623375222368, 'right': 1.9462251074334946, None: 1},
-}
+(right,   green, left,    forward): forward:  1.16, left:  1,    right: 1,    none: 1
+(right,   green, left,    none):    forward:  1,    left:  1.22, right: 1,    none: 1
+(right,   green, none,    left):    forward:  1.14, left:  1,    right: 1,    none: 1
+(right,   green, none,    right):   forward:  1.11, left:  1,    right: 1,    none: 1
+(right,   green, none,    none):    forward:  2.59, left:  1.96, right: 3.47, none: 2.69
+(right,   red,   forward, none):    forward: -0.50, left: -0.13, right: 2.97, none: 1
+(right,   red,   left,    forward): forward:  0.59, left:  1,    right: 1,    none: 1
+(right,   red,   left,    none):    forward:  0.38, left:  0.24, right: 2.38, none: 1
+(right,   red,   right,   none):    forward:  0.68, left:  0.51, right: 1,    none: 1
+(right,   red,   none,    left):    forward:  1,    left:  1,    right: 1,    none: 1
+(right,   red,   none,    right):   forward:  1,    left:  1,    right: 1,    none: 1
+(right,   red,   none,    none):    forward:  0.68, left:  0.88, right: 3.31, none: 2.97
 ```
 
 Looking at the above Q-values, two things stand out to me:
