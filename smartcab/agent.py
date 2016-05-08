@@ -14,7 +14,8 @@ class LearningAgent(Agent):
         self.color = 'red'  # override color
         self.planner = RoutePlanner(self.env, self)  # simple route planner to get next_waypoint
         # TODO: Initialize any additional variables here
-        self.randomness = 0.05
+        self.randomness = 0.1
+        self.learning_rate_pow = 0.8
         self.discount = 0.5
         self.net_reward = 0
         self.penalties = 0
@@ -48,7 +49,6 @@ class LearningAgent(Agent):
         reward = self.env.act(self, action)
         if reward < 0:
             self.penalties += 1
-        # TODO: Set reward to negative if failed to reach destination?
 
         # TODO: Learn policy based on state, action, reward
         self.update_q_values(t, action, reward)
@@ -56,6 +56,8 @@ class LearningAgent(Agent):
 
         if self.planner.next_waypoint() == None:
             print "Reached destination in {} timesteps. Net reward: {}, Penalties: {}".format(t+1, self.net_reward, self.penalties)
+        elif deadline == 0:
+            print "Failed to reach desination in {} timesteps. Net reward: {}, Penalties: {}".format(t+1, self.net_reward, self.penalties)
 
     def build_state_tuple(self, waypoint, inputs):
         return (waypoint, inputs['light'], inputs['oncoming'], inputs['left'])
@@ -74,7 +76,7 @@ class LearningAgent(Agent):
         return max(actions.iteritems(), key=itemgetter(1))
 
     def update_q_values(self, t, action, reward):
-        learning_rate = 1.0/(t + 1)
+        learning_rate = 1.0/(t + 1) ** self.learning_rate_pow
         
         new_waypoint = self.planner.next_waypoint()
         new_inputs = self.env.sense(self)
